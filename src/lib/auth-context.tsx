@@ -1,6 +1,14 @@
+'use client';
+
 import { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { mockAuth } from './mock/services';
+
+type User = {
+  id: string;
+  email: string;
+  displayName: string;
+  role: 'admin' | 'user';
+};
 
 type AuthContextType = {
   user: User | null;
@@ -13,17 +21,27 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(mockAuth.currentUser);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    // Check local storage for saved user session
+    const savedUser = localStorage.getItem('mockUser');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+      mockAuth.currentUser = JSON.parse(savedUser);
+    }
+    setLoading(false);
   }, []);
+
+  // Watch for auth changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('mockUser', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('mockUser');
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, loading }}>

@@ -120,4 +120,3 @@ const categories = [
     image: '/categories/home-fragments.jpg',
   },
 ];
-}
