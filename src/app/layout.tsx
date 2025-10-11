@@ -4,6 +4,7 @@ import './globals.css';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { AuthProvider } from '@/lib/auth-context';
+import { CartProvider } from '@/lib/cart-context';
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({
@@ -32,12 +33,14 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfairDisplay.variable}`}>
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
-          <Navbar />
-          <main className="flex-grow pt-16">
-            {children}
-          </main>
-          <Footer />
-          <Toaster position="bottom-right" />
+          <CartProvider>
+            <Navbar />
+            <main className="flex-grow pt-16">
+              {children}
+            </main>
+            <Footer />
+            <Toaster position="bottom-right" />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
